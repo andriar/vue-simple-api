@@ -2,16 +2,22 @@
   <div id="app">
     <table>
       <tr>
-        <th>Company</th>
-        <th>Contact</th>
-        <th>Country</th>
+        <th>Id</th>
+        <th>Title</th>
+        <th>Body</th>
       </tr>
-      <tr>
-        <td>Alfreds Futterkiste</td>
-        <td>Maria Anders</td>
-        <td>Germany</td>
+      <tr v-for="(result, index) in results" :key="index">
+        <td>{{ result.id }}</td>
+        <td>{{ result.title }}</td>
+        <td>{{ result.body }}</td>
       </tr>
     </table>
+
+    <div>
+      <input type="text" v-model="title" />
+      <input type="text" v-model="body" />
+      <button @click="postData">save</button>
+    </div>
   </div>
 </template>
 
@@ -19,11 +25,40 @@
 export default {
   name: "App",
   components: {},
+
+  data() {
+    return {
+      results: [],
+      title: "",
+      body: "",
+    };
+  },
   methods: {
     async getData() {
-      const data = await fetch("https://jsonplaceholder.typicode.com/posts");
+      const data = await fetch(
+        "https://jsonplaceholder.typicode.com/posts/101"
+      );
       const res = await data.json();
+
       console.info(res);
+      console.info(this.results);
+      this.results = res.filter((el) => el.id <= 103);
+    },
+    async postData() {
+      const katalog = {
+        title: this.title,
+        body: this.body,
+      };
+      console.info(this.title, " ", this.body);
+      let response = await fetch("https://jsonplaceholder.typicode.com/posts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json;charset=utf-8",
+        },
+        body: JSON.stringify(katalog),
+      });
+      let result = await response.json();
+      alert(result.message);
     },
   },
   mounted() {
